@@ -162,8 +162,12 @@ class DrupalAuthenticationManager implements DrupalAuthenticationManagerInterfac
 
         // As a last resort, if a logout link is found, we are logged in. While not
         // perfect, this is how Drupal SimpleTests currently work as well.
-        if ($page->findLink($this->getDrupalText('log_out'))) {
-            return true;
+        $logout_found = $page->waitFor(10, function () use ($page) {
+          return $page->findLink($this->getDrupalText('log_out'));
+        });
+
+        if ($logout_found) {
+          return true;
         }
 
         // The user appears to be anonymous. Calling logout() both ensures this is the
